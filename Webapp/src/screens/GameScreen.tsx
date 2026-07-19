@@ -21,16 +21,16 @@ export default function GameScreen() {
     players.every(p => p.status !== 'active')
 
   return (
-    <div className="min-h-screen bg-green-900 flex flex-col">
+    <div className="min-h-screen flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-safe pt-3 pb-2">
-        <div className="text-green-400 text-xs">
+        <div className="text-white/30 text-xs">
           Blinds: {smallBlind}/{bigBlind}
         </div>
         <PotDisplay pot={pot} phase={phase} handNumber={handNumber} />
         <button
           onClick={() => setShowLeaderboard(true)}
-          className="text-green-500 text-xs text-right active:text-red-400 transition-colors"
+          className="text-white/25 text-xs text-right active:text-red-400 transition-colors"
         >
           End&nbsp;Session
         </button>
@@ -62,7 +62,7 @@ export default function GameScreen() {
         <div className="px-4 pb-2">
           <button
             onClick={nextRound}
-            className="w-full bg-green-700 hover:bg-green-600 active:bg-green-800 text-white font-semibold py-3 rounded-2xl text-sm transition-colors"
+            className="w-full bg-white/[0.07] border border-white/10 hover:bg-white/[0.10] active:bg-white/[0.05] text-white/70 font-semibold py-3 rounded-2xl text-sm transition-colors"
           >
             → {phase === 'PRE_FLOP' ? 'Deal Flop' : phase === 'FLOP' ? 'Deal Turn' : phase === 'TURN' ? 'Deal River' : 'Showdown'}
           </button>

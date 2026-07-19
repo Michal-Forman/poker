@@ -36,16 +36,16 @@ export default function SetupScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-green-900 flex flex-col items-center px-4 py-8">
-      <h1 className="text-4xl font-bold text-yellow-400 mb-1 tracking-wide">♠ POKER</h1>
-      <p className="text-green-300 text-sm mb-8">Texas Hold'em Chip Tracker</p>
+    <div className="min-h-screen flex flex-col items-center px-4 py-8">
+      <h1 className="text-4xl font-bold text-amber-400 mb-1 tracking-wide">♠ POKER</h1>
+      <p className="text-white/30 text-sm mb-8">Texas Hold'em Chip Tracker</p>
 
       <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-6">
 
         {/* Player count */}
-        <div className="bg-green-800 rounded-2xl p-4 space-y-3">
+        <div className="bg-white/[0.05] border border-white/10 rounded-2xl p-4 space-y-3">
           <label className="text-white font-semibold text-lg">
-            Players: <span className="text-yellow-400">{playerCount}</span>
+            Players: <span className="text-amber-400">{playerCount}</span>
           </label>
           <input
             type="range"
@@ -53,18 +53,18 @@ export default function SetupScreen() {
             max={9}
             value={playerCount}
             onChange={e => setPlayerCount(Number(e.target.value))}
-            className="w-full accent-yellow-400"
+            className="w-full accent-amber-400"
           />
-          <div className="flex justify-between text-green-300 text-xs">
+          <div className="flex justify-between text-white/30 text-xs">
             <span>2</span><span>9</span>
           </div>
         </div>
 
         {/* Player names + chips */}
-        <div className="bg-green-800 rounded-2xl p-4 space-y-2">
+        <div className="bg-white/[0.05] border border-white/10 rounded-2xl p-4 space-y-2">
           <div className="flex items-center mb-3">
             <p className="text-white font-semibold text-lg flex-1">Players</p>
-            <span className="text-green-400 text-xs">Name / Chips</span>
+            <span className="text-white/30 text-xs">Name / Chips</span>
           </div>
           {Array.from({ length: playerCount }).map((_, i) => (
             <div key={i} className="flex gap-2">
@@ -74,13 +74,13 @@ export default function SetupScreen() {
                 value={names[i]}
                 onChange={e => handleNameChange(i, e.target.value)}
                 maxLength={16}
-                className="flex-1 bg-green-700 text-white placeholder-green-400 rounded-xl px-3 py-2.5 text-base outline-none focus:ring-2 focus:ring-yellow-400"
+                className="flex-1 bg-white/[0.06] border border-white/10 text-white placeholder-white/25 rounded-xl px-3 py-2.5 text-base outline-none focus:ring-1 focus:ring-amber-400/50"
               />
               <input
                 type="number"
                 value={chips[i]}
                 onChange={e => handleChipsChange(i, Number(e.target.value))}
-                className="w-24 bg-green-700 text-white rounded-xl px-2 py-2.5 text-base font-bold outline-none focus:ring-2 focus:ring-yellow-400 text-center"
+                className="w-24 bg-white/[0.06] border border-white/10 text-white rounded-xl px-2 py-2.5 text-base font-bold outline-none focus:ring-1 focus:ring-amber-400/50 text-center"
               />
             </div>
           ))}
@@ -90,7 +90,7 @@ export default function SetupScreen() {
                 key={v}
                 type="button"
                 onClick={() => setChips(prev => prev.map(() => v))}
-                className="flex-1 py-1.5 rounded-lg text-xs font-medium bg-green-700 text-green-200 hover:bg-green-600 transition-colors"
+                className="flex-1 py-1.5 rounded-lg text-xs font-medium bg-white/[0.05] border border-white/10 text-white/50 hover:bg-white/[0.09] transition-colors"
               >
                 All {v >= 1000 ? `${v / 1000}K` : v}
               </button>
@@ -99,11 +99,11 @@ export default function SetupScreen() {
         </div>
 
         {/* Blinds */}
-        <div className="bg-green-800 rounded-2xl p-4 space-y-3">
+        <div className="bg-white/[0.05] border border-white/10 rounded-2xl p-4 space-y-3">
           <p className="text-white font-semibold text-lg">Blinds</p>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-green-300 text-sm block mb-1">Small Blind</label>
+              <label className="text-white/30 text-sm block mb-1">Small Blind</label>
               <input
                 type="number"
                 value={smallBlind}
@@ -112,16 +112,16 @@ export default function SetupScreen() {
                   setSmallBlind(val)
                   if (bigBlind <= val) setBigBlind(val * 2)
                 }}
-                className="w-full bg-green-700 text-white rounded-xl px-3 py-2.5 text-lg font-bold outline-none focus:ring-2 focus:ring-yellow-400 text-center"
+                className="w-full bg-white/[0.06] border border-white/10 text-white rounded-xl px-3 py-2.5 text-lg font-bold outline-none focus:ring-1 focus:ring-amber-400/50 text-center"
               />
             </div>
             <div>
-              <label className="text-green-300 text-sm block mb-1">Big Blind</label>
+              <label className="text-white/30 text-sm block mb-1">Big Blind</label>
               <input
                 type="number"
                 value={bigBlind}
                 onChange={e => setBigBlind(Math.max(smallBlind + 1, Number(e.target.value)))}
-                className="w-full bg-green-700 text-white rounded-xl px-3 py-2.5 text-lg font-bold outline-none focus:ring-2 focus:ring-yellow-400 text-center"
+                className="w-full bg-white/[0.06] border border-white/10 text-white rounded-xl px-3 py-2.5 text-lg font-bold outline-none focus:ring-1 focus:ring-amber-400/50 text-center"
               />
             </div>
           </div>
@@ -133,8 +133,8 @@ export default function SetupScreen() {
                 onClick={() => { setSmallBlind(sb); setBigBlind(bb) }}
                 className={`flex-1 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   smallBlind === sb && bigBlind === bb
-                    ? 'bg-yellow-400 text-green-900'
-                    : 'bg-green-700 text-green-200 hover:bg-green-600'
+                    ? 'bg-amber-400 text-black'
+                    : 'bg-white/[0.05] border border-white/10 text-white/50 hover:bg-white/[0.09]'
                 }`}
               >
                 {sb}/{bb}
@@ -144,24 +144,24 @@ export default function SetupScreen() {
         </div>
 
         {/* Advanced Settings */}
-        <div className="bg-green-800 rounded-2xl overflow-hidden">
+        <div className="bg-white/[0.05] border border-white/10 rounded-2xl overflow-hidden">
           <button
             type="button"
             onClick={() => setShowAdvanced(v => !v)}
             className="w-full flex items-center justify-between px-4 py-3 text-white font-semibold"
           >
             <span>Advanced</span>
-            <span className="text-green-400 text-sm">{showAdvanced ? '▲' : '▼'}</span>
+            <span className="text-white/30 text-sm">{showAdvanced ? '▲' : '▼'}</span>
           </button>
           {showAdvanced && (
-            <div className="px-4 pb-4 space-y-3 border-t border-green-700 pt-3">
+            <div className="px-4 pb-4 space-y-3 border-t border-white/[0.07] pt-3">
               <div>
-                <label className="text-green-300 text-sm block mb-1">Min Bet / Raise Increment</label>
+                <label className="text-white/30 text-sm block mb-1">Min Bet / Raise Increment</label>
                 <input
                   type="number"
                   value={minBet}
                   onChange={e => setMinBet(Math.max(1, Number(e.target.value)))}
-                  className="w-full bg-green-700 text-white rounded-xl px-4 py-2.5 text-lg font-bold outline-none focus:ring-2 focus:ring-yellow-400 text-center"
+                  className="w-full bg-white/[0.06] border border-white/10 text-white rounded-xl px-4 py-2.5 text-lg font-bold outline-none focus:ring-1 focus:ring-amber-400/50 text-center"
                 />
               </div>
             </div>
@@ -170,7 +170,7 @@ export default function SetupScreen() {
 
         <button
           type="submit"
-          className="w-full bg-yellow-400 hover:bg-yellow-300 active:bg-yellow-500 text-green-900 font-bold text-xl py-4 rounded-2xl transition-colors shadow-lg"
+          className="w-full bg-amber-400 hover:bg-amber-300 active:bg-amber-500 text-black font-bold text-xl py-4 rounded-2xl transition-colors shadow-lg shadow-amber-500/20"
         >
           START GAME
         </button>

@@ -10,12 +10,12 @@ const PHASE_LABELS: Record<Phase, string> = {
 }
 
 const PHASE_COLORS: Record<Phase, string> = {
-  SETUP: 'text-gray-400',
-  PRE_FLOP: 'text-blue-300',
-  FLOP: 'text-green-300',
-  TURN: 'text-yellow-300',
-  RIVER: 'text-orange-300',
-  SHOWDOWN: 'text-red-300',
+  SETUP: 'text-white/25',
+  PRE_FLOP: 'text-white/45',
+  FLOP: 'text-white/55',
+  TURN: 'text-amber-300/70',
+  RIVER: 'text-amber-400/80',
+  SHOWDOWN: 'text-red-400/80',
 }
 
 interface Props {
@@ -31,12 +31,12 @@ export default function PotDisplay({ pot, phase, handNumber }: Props) {
         <span className={`text-xs font-bold uppercase tracking-widest ${PHASE_COLORS[phase]}`}>
           {PHASE_LABELS[phase]}
         </span>
-        <span className="text-green-600 text-xs">Hand #{handNumber}</span>
+        <span className="text-white/20 text-xs">Hand #{handNumber}</span>
       </div>
       <div className="text-3xl font-bold text-white">
         🪙 {pot.toLocaleString()}
       </div>
-      <div className="text-green-400 text-xs mt-0.5">POT</div>
+      <div className="text-white/25 text-xs mt-0.5">POT</div>
     </div>
   )
 }

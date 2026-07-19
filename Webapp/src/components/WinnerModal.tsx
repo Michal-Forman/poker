@@ -47,19 +47,19 @@ export default function WinnerModal({ onEndGame }: Props) {
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-end justify-center z-50 pb-safe overflow-y-auto">
-      <div className="bg-green-900 rounded-t-3xl w-full max-w-sm p-6 space-y-4">
+      <div className="bg-[#070a0f] border-t border-white/[0.08] rounded-t-3xl w-full max-w-sm p-6 space-y-4">
         <div className="text-center">
           <div className="text-4xl mb-2">🏆</div>
           <h2 className="text-white text-2xl font-bold">Showdown</h2>
-          <p className="text-yellow-400 text-xl font-bold mt-1">
+          <p className="text-amber-400 text-xl font-bold mt-1">
             Total: 🪙 {pot.toLocaleString()}
           </p>
         </div>
 
         {isAutoWin ? (
           <div className="text-center">
-            <p className="text-green-300 text-sm mb-3">Everyone else folded</p>
-            <div className="bg-yellow-400 text-green-900 rounded-2xl p-4">
+            <p className="text-white/40 text-sm mb-3">Everyone else folded</p>
+            <div className="bg-amber-400 text-black rounded-2xl p-4">
               <p className="font-bold text-xl">{eligible[0].name} wins!</p>
               <p className="text-sm mt-1">+🪙 {pot.toLocaleString()}</p>
             </div>
@@ -76,14 +76,14 @@ export default function WinnerModal({ onEndGame }: Props) {
               return (
                 <div key={potIdx} className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-green-300 text-sm font-semibold">{label}</span>
-                    <span className="text-yellow-400 font-bold">🪙 {sp.amount.toLocaleString()}</span>
+                    <span className="text-white/40 text-sm font-semibold">{label}</span>
+                    <span className="text-amber-400 font-bold">🪙 {sp.amount.toLocaleString()}</span>
                   </div>
 
                   {sp.eligiblePlayerIds.length === 1 ? (
                     // Only one eligible player — auto-awarded, just show it
-                    <div className="bg-yellow-400/20 border border-yellow-400/40 rounded-2xl p-3">
-                      <p className="text-yellow-300 text-sm">
+                    <div className="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-3">
+                      <p className="text-white/50 text-sm">
                         Auto-awarded to{' '}
                         <span className="font-bold">
                           {players.find(p => p.id === sp.eligiblePlayerIds[0])?.name}
@@ -99,18 +99,18 @@ export default function WinnerModal({ onEndGame }: Props) {
                           <button
                             key={pid}
                             onClick={() => toggleWinner(potIdx, pid)}
-                            className={`rounded-2xl p-3 text-left transition-all ${
+                            className={`rounded-2xl p-3 text-left transition-all border ${
                               isSelected
-                                ? 'bg-yellow-400 text-green-900'
-                                : 'bg-green-800 text-white'
+                                ? 'bg-amber-400 border-amber-300/50 text-black'
+                                : 'bg-white/[0.05] border-white/10 text-white'
                             }`}
                           >
                             <p className="font-bold truncate">{player.name}</p>
-                            <p className={`text-sm ${isSelected ? 'text-green-800' : 'text-yellow-400'}`}>
+                            <p className={`text-sm ${isSelected ? 'text-black/60' : 'text-amber-400'}`}>
                               🪙 {player.chips.toLocaleString()}
                             </p>
                             {isSelected && sharePerWinner !== null && (
-                              <p className="text-xs text-green-700 mt-1">+{sharePerWinner.toLocaleString()}</p>
+                              <p className="text-xs text-black/50 mt-1">+{sharePerWinner.toLocaleString()}</p>
                             )}
                           </button>
                         )
@@ -126,7 +126,7 @@ export default function WinnerModal({ onEndGame }: Props) {
         <button
           onClick={handleAward}
           disabled={!isAutoWin && !allPotsHaveWinners}
-          className="w-full bg-yellow-400 disabled:opacity-40 text-green-900 font-bold text-xl py-4 rounded-2xl"
+          className="w-full bg-amber-400 disabled:opacity-40 text-black font-bold text-xl py-4 rounded-2xl shadow-lg shadow-amber-500/15"
         >
           {isAutoWin ? 'COLLECT POT' : sidePots.length > 1 ? 'AWARD POTS' : 'AWARD POT'}
         </button>
@@ -134,13 +134,13 @@ export default function WinnerModal({ onEndGame }: Props) {
         <div className="flex gap-3 pt-1">
           <button
             onClick={nextHand}
-            className="flex-1 bg-green-700 text-white font-semibold py-3 rounded-2xl"
+            className="flex-1 bg-white/[0.07] border border-white/10 text-white/70 font-semibold py-3 rounded-2xl"
           >
             Next Hand
           </button>
           <button
             onClick={onEndGame}
-            className="flex-1 bg-green-950 text-green-400 font-semibold py-3 rounded-2xl"
+            className="flex-1 border border-white/[0.06] text-white/25 font-semibold py-3 rounded-2xl"
           >
             End Game
           </button>
