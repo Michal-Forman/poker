@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useGameStore } from '../store/gameStore'
+import { computeSidePots } from '../store/gameStore'
 
 interface Props {
   onEndGame: () => void
@@ -7,36 +8,51 @@ interface Props {
 
 export default function WinnerModal({ onEndGame }: Props) {
   const { players, pot, awardPot, nextHand } = useGameStore()
-  const [selectedIds, setSelectedIds] = useState<number[]>([])
 
+  const sidePots = computeSidePots(players)
   const eligible = players.filter(p => p.status !== 'folded')
   const isAutoWin = eligible.length === 1
 
-  const toggleWinner = (id: number) => {
-    setSelectedIds(prev =>
-      prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
-    )
+  // selectedWinners[i] = winner ids chosen for sidePots[i]
+  // Pre-select pots where there's only one eligible player
+  const [selectedWinners, setSelectedWinners] = useState<number[][]>(
+    () => sidePots.map(sp => sp.eligiblePlayerIds.length === 1 ? [...sp.eligiblePlayerIds] : [])
+  )
+
+  const toggleWinner = (potIdx: number, playerId: number) => {
+    setSelectedWinners(prev => {
+      const next = prev.map(w => [...w])
+      next[potIdx] = next[potIdx].includes(playerId)
+        ? next[potIdx].filter(id => id !== playerId)
+        : [...next[potIdx], playerId]
+      return next
+    })
   }
+
+  const allPotsHaveWinners = selectedWinners.every(w => w.length > 0)
 
   const handleAward = () => {
-    const winners = isAutoWin ? [eligible[0].id] : selectedIds
-    if (winners.length === 0) return
-    awardPot(winners)
-    setSelectedIds([])
+    if (isAutoWin) {
+      awardPot(sidePots.map(() => [eligible[0].id]))
+      return
+    }
+    if (!allPotsHaveWinners) return
+    awardPot(selectedWinners)
   }
 
-  const sharePerWinner = selectedIds.length > 0
-    ? Math.floor(pot / (isAutoWin ? 1 : selectedIds.length))
-    : null
+  const potLabel = (idx: number, total: number) => {
+    if (total === 1) return 'Pot'
+    return idx === 0 ? 'Main Pot' : `Side Pot ${idx}`
+  }
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-end justify-center z-50 pb-safe">
+    <div className="fixed inset-0 bg-black/80 flex items-end justify-center z-50 pb-safe overflow-y-auto">
       <div className="bg-green-900 rounded-t-3xl w-full max-w-sm p-6 space-y-4">
         <div className="text-center">
           <div className="text-4xl mb-2">🏆</div>
           <h2 className="text-white text-2xl font-bold">Showdown</h2>
           <p className="text-yellow-400 text-xl font-bold mt-1">
-            Pot: 🪙 {pot.toLocaleString()}
+            Total: 🪙 {pot.toLocaleString()}
           </p>
         </div>
 
@@ -50,42 +66,71 @@ export default function WinnerModal({ onEndGame }: Props) {
           </div>
         ) : (
           <>
-            <p className="text-green-300 text-sm text-center">
-              Tap player(s) who won (tap multiple for split pot)
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              {eligible.map(p => (
-                <button
-                  key={p.id}
-                  onClick={() => toggleWinner(p.id)}
-                  className={`rounded-2xl p-3 text-left transition-all ${
-                    selectedIds.includes(p.id)
-                      ? 'bg-yellow-400 text-green-900'
-                      : 'bg-green-800 text-white'
-                  }`}
-                >
-                  <p className="font-bold truncate">{p.name}</p>
-                  <p className={`text-sm ${selectedIds.includes(p.id) ? 'text-green-800' : 'text-yellow-400'}`}>
-                    🪙 {p.chips.toLocaleString()}
-                  </p>
-                  {selectedIds.includes(p.id) && sharePerWinner !== null && (
-                    <p className="text-xs text-green-700 mt-1">+{sharePerWinner.toLocaleString()}</p>
+            {sidePots.map((sp, potIdx) => {
+              const label = potLabel(potIdx, sidePots.length)
+              const potWinners = selectedWinners[potIdx]
+              const sharePerWinner = potWinners.length > 0
+                ? Math.floor(sp.amount / potWinners.length)
+                : null
+
+              return (
+                <div key={potIdx} className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-green-300 text-sm font-semibold">{label}</span>
+                    <span className="text-yellow-400 font-bold">🪙 {sp.amount.toLocaleString()}</span>
+                  </div>
+
+                  {sp.eligiblePlayerIds.length === 1 ? (
+                    // Only one eligible player — auto-awarded, just show it
+                    <div className="bg-yellow-400/20 border border-yellow-400/40 rounded-2xl p-3">
+                      <p className="text-yellow-300 text-sm">
+                        Auto-awarded to{' '}
+                        <span className="font-bold">
+                          {players.find(p => p.id === sp.eligiblePlayerIds[0])?.name}
+                        </span>
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-2">
+                      {sp.eligiblePlayerIds.map(pid => {
+                        const player = players.find(p => p.id === pid)!
+                        const isSelected = potWinners.includes(pid)
+                        return (
+                          <button
+                            key={pid}
+                            onClick={() => toggleWinner(potIdx, pid)}
+                            className={`rounded-2xl p-3 text-left transition-all ${
+                              isSelected
+                                ? 'bg-yellow-400 text-green-900'
+                                : 'bg-green-800 text-white'
+                            }`}
+                          >
+                            <p className="font-bold truncate">{player.name}</p>
+                            <p className={`text-sm ${isSelected ? 'text-green-800' : 'text-yellow-400'}`}>
+                              🪙 {player.chips.toLocaleString()}
+                            </p>
+                            {isSelected && sharePerWinner !== null && (
+                              <p className="text-xs text-green-700 mt-1">+{sharePerWinner.toLocaleString()}</p>
+                            )}
+                          </button>
+                        )
+                      })}
+                    </div>
                   )}
-                </button>
-              ))}
-            </div>
+                </div>
+              )
+            })}
           </>
         )}
 
         <button
           onClick={handleAward}
-          disabled={!isAutoWin && selectedIds.length === 0}
+          disabled={!isAutoWin && !allPotsHaveWinners}
           className="w-full bg-yellow-400 disabled:opacity-40 text-green-900 font-bold text-xl py-4 rounded-2xl"
         >
-          {isAutoWin ? 'COLLECT POT' : 'AWARD POT'}
+          {isAutoWin ? 'COLLECT POT' : sidePots.length > 1 ? 'AWARD POTS' : 'AWARD POT'}
         </button>
 
-        {/* After awarding, show next hand / end game */}
         <div className="flex gap-3 pt-1">
           <button
             onClick={nextHand}

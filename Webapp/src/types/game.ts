@@ -1,5 +1,10 @@
 export type Phase = 'SETUP' | 'PRE_FLOP' | 'FLOP' | 'TURN' | 'RIVER' | 'SHOWDOWN'
 
+export interface SidePot {
+  amount: number
+  eligiblePlayerIds: number[]  // non-folded players who contributed to this level
+}
+
 export type PlayerStatus = 'active' | 'folded' | 'all-in'
 
 export interface Player {
@@ -39,7 +44,7 @@ export interface GameState {
   call: () => void
   raise: (amount: number) => void
   nextRound: () => void
-  awardPot: (winnerIds: number[]) => void
+  awardPot: (potWinners: number[][]) => void  // potWinners[i] = winner ids for side pot i
   nextHand: () => void
   resetToSetup: () => void
 }

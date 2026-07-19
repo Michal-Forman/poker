@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { GameState, Player, SetupConfig, Phase } from '../types/game'
+import type { GameState, Player, SetupConfig, Phase, SidePot } from '../types/game'
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
@@ -63,6 +63,50 @@ function postBlinds(
   })
 
   return { players: updated, sbIndex, bbIndex }
+}
+
+// ─── side pot calculation ──────────────────────────────────────────────────────
+// Side pots are determined by all-in bet levels. Each all-in creates a tier:
+// everyone who put in at least that amount contributes to it, but only
+// non-folded players at that level are eligible to win it.
+
+export function computeSidePots(players: Player[]): SidePot[] {
+  const allInPlayers = players.filter(p => p.status === 'all-in')
+
+  if (allInPlayers.length === 0) {
+    // No all-ins → single pot, all non-folded players eligible
+    const eligible = players.filter(p => p.status !== 'folded').map(p => p.id)
+    const total = players.reduce((sum, p) => sum + p.totalBet, 0)
+    return total > 0 ? [{ amount: total, eligiblePlayerIds: eligible }] : []
+  }
+
+  // Unique all-in bet levels sorted ascending
+  const levels = [...new Set(allInPlayers.map(p => p.totalBet))].sort((a, b) => a - b)
+
+  const pots: SidePot[] = []
+  let prevLevel = 0
+
+  for (const level of levels) {
+    const increment = level - prevLevel
+    // All players (including folded) who put in at least `level` contribute chips here
+    const contributors = players.filter(p => p.totalBet >= level)
+    const amount = increment * contributors.length
+    const eligiblePlayerIds = contributors
+      .filter(p => p.status !== 'folded')
+      .map(p => p.id)
+    if (amount > 0) pots.push({ amount, eligiblePlayerIds })
+    prevLevel = level
+  }
+
+  // Remaining chips above the highest all-in level
+  const aboveLevel = players.filter(p => p.totalBet > prevLevel)
+  if (aboveLevel.length > 0) {
+    const amount = aboveLevel.reduce((sum, p) => sum + (p.totalBet - prevLevel), 0)
+    const eligiblePlayerIds = aboveLevel.filter(p => p.status !== 'folded').map(p => p.id)
+    if (amount > 0) pots.push({ amount, eligiblePlayerIds })
+  }
+
+  return pots
 }
 
 const PHASE_ORDER: Phase[] = ['PRE_FLOP', 'FLOP', 'TURN', 'RIVER', 'SHOWDOWN']
@@ -249,20 +293,25 @@ export const useGameStore = create<GameState>()(
         set(advanced)
       },
 
-      awardPot: (winnerIds: number[]) => {
-        const { players, pot } = get()
-        const share = Math.floor(pot / winnerIds.length)
-        const remainder = pot % winnerIds.length
+      awardPot: (potWinners: number[][]) => {
+        const { players } = get()
+        const sidePots = computeSidePots(players)
 
-        const updated = players.map((p) => {
-          if (winnerIds.includes(p.id)) {
-            // First winner in the list gets any remainder chips
-            const bonus = p.id === winnerIds[0] ? remainder : 0
-            return { ...p, chips: p.chips + share + bonus }
-          }
-          return p
-        })
+        // Accumulate chip gains per player across all side pots
+        const gains = new Map<number, number>(players.map(p => [p.id, 0]))
 
+        for (let i = 0; i < sidePots.length; i++) {
+          const winners = potWinners[i] ?? []
+          if (winners.length === 0) continue
+          const { amount } = sidePots[i]
+          const share = Math.floor(amount / winners.length)
+          const remainder = amount % winners.length
+          winners.forEach((wid, idx) => {
+            gains.set(wid, (gains.get(wid) ?? 0) + share + (idx === 0 ? remainder : 0))
+          })
+        }
+
+        const updated = players.map(p => ({ ...p, chips: p.chips + (gains.get(p.id) ?? 0) }))
         set({ players: updated, pot: 0 })
       },
 
