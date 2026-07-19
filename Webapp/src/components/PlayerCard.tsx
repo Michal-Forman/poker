@@ -1,3 +1,4 @@
+import { forwardRef } from 'react'
 import type { Player } from '../types/game'
 
 interface Props {
@@ -6,14 +7,19 @@ interface Props {
   isDealer: boolean
   isSB: boolean
   isBB: boolean
+  chipsRef?: (el: HTMLParagraphElement | null) => void
 }
 
-export default function PlayerCard({ player, isActive, isDealer, isSB, isBB }: Props) {
+const PlayerCard = forwardRef<HTMLDivElement, Props>(function PlayerCard(
+  { player, isActive, isDealer, isSB, isBB, chipsRef },
+  ref
+) {
   const isFolded = player.status === 'folded'
   const isAllIn = player.status === 'all-in'
 
   return (
     <div
+      ref={ref}
       className={`rounded-2xl p-3 transition-all duration-200 border ${
         isFolded
           ? 'bg-white/[0.03] border-white/5 opacity-30'
@@ -47,7 +53,7 @@ export default function PlayerCard({ player, isActive, isDealer, isSB, isBB }: P
       </p>
 
       {/* Chips */}
-      <p className={`text-sm font-semibold mt-0.5 ${isActive ? 'text-black/70' : 'text-amber-400'}`}>
+      <p ref={chipsRef} className={`text-sm font-semibold mt-0.5 ${isActive ? 'text-black/70' : 'text-amber-400'}`}>
         🪙 {player.chips.toLocaleString()}
       </p>
 
@@ -59,4 +65,6 @@ export default function PlayerCard({ player, isActive, isDealer, isSB, isBB }: P
       )}
     </div>
   )
-}
+})
+
+export default PlayerCard

@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { GameState, Player, SetupConfig, Phase, SidePot } from '../types/game'
+import { useAnimationStore } from './animationStore'
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
@@ -223,6 +224,7 @@ export const useGameStore = create<GameState>()(
 
         const toCall = currentBet - player.currentBet
         const actualCall = Math.min(toCall, player.chips)
+        if (actualCall > 0) useAnimationStore.getState().triggerCoinAnimation(currentPlayerIndex)
         const goesAllIn = actualCall >= player.chips
 
         const updated = players.map((p, i) =>
@@ -255,6 +257,7 @@ export const useGameStore = create<GameState>()(
         const { players, currentPlayerIndex, pot } = get()
         const player = players[currentPlayerIndex]
 
+        useAnimationStore.getState().triggerCoinAnimation(currentPlayerIndex)
         const additional = totalBetAmount - player.currentBet
         const actualAdditional = Math.min(additional, player.chips)
         const newPlayerBet = player.currentBet + actualAdditional

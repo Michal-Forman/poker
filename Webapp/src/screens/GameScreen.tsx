@@ -1,14 +1,64 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useGameStore } from '../store/gameStore'
+import { useAnimationStore } from '../store/animationStore'
 import PlayerCard from '../components/PlayerCard'
 import PotDisplay from '../components/PotDisplay'
 import ActionPanel from '../components/ActionPanel'
 import WinnerModal from '../components/WinnerModal'
 import LeaderboardModal from '../components/LeaderboardModal'
 
+interface FlyingCoin {
+  id: number
+  x: number
+  y: number
+  dx: number
+  dy: number
+  delay: number
+}
+
 export default function GameScreen() {
   const { players, phase, pot, handNumber, dealerIndex, smallBlind, bigBlind, currentPlayerIndex, nextRound } = useGameStore()
   const [showLeaderboard, setShowLeaderboard] = useState(false)
+
+  const playerCardRefs = useRef<(HTMLDivElement | null)[]>([])
+  const chipsRefs = useRef<(HTMLParagraphElement | null)[]>([])
+  const potRef = useRef<HTMLDivElement | null>(null)
+  const [flyingCoins, setFlyingCoins] = useState<FlyingCoin[]>([])
+
+  const lastAction = useAnimationStore(s => s.lastAction)
+
+  useEffect(() => {
+    if (!lastAction) return
+    const chipsEl = chipsRefs.current[lastAction.playerIndex]
+    const potEl = potRef.current
+    if (!chipsEl || !potEl) return
+
+    const pRect = chipsEl.getBoundingClientRect()
+    const potRect = potEl.getBoundingClientRect()
+
+    const startX = pRect.left + pRect.width / 2
+    const startY = pRect.top + pRect.height / 2
+    const endX = potRect.left + potRect.width / 2
+    const endY = potRect.top + potRect.height / 2
+    const dx = endX - startX
+    const dy = endY - startY
+
+    const coins: FlyingCoin[] = Array.from({ length: 4 }, (_, i) => ({
+      id: lastAction.id * 10 + i,
+      x: startX + (i % 2 === 0 ? -8 : 8),
+      y: startY + (i < 2 ? -8 : 8),
+      dx,
+      dy,
+      delay: i * 45,
+    }))
+
+    setFlyingCoins(prev => [...prev, ...coins])
+    const timer = setTimeout(
+      () => setFlyingCoins(prev => prev.filter(c => !coins.find(n => n.id === c.id))),
+      600
+    )
+    return () => clearTimeout(timer)
+  }, [lastAction])
 
   const count = players.length
   const sbIndex = (dealerIndex + 1) % count
@@ -27,7 +77,9 @@ export default function GameScreen() {
         <div className="text-white/30 text-xs">
           Blinds: {smallBlind}/{bigBlind}
         </div>
-        <PotDisplay pot={pot} phase={phase} handNumber={handNumber} />
+        <div ref={potRef}>
+          <PotDisplay pot={pot} phase={phase} handNumber={handNumber} />
+        </div>
         <button
           onClick={() => setShowLeaderboard(true)}
           className="text-white/25 text-xs text-right active:text-red-400 transition-colors"
@@ -47,6 +99,8 @@ export default function GameScreen() {
           {players.map((player, i) => (
             <PlayerCard
               key={player.id}
+              ref={el => { playerCardRefs.current[i] = el }}
+              chipsRef={el => { chipsRefs.current[i] = el }}
               player={player}
               isActive={i === currentPlayerIndex && !isShowdown}
               isDealer={i === dealerIndex}
@@ -79,6 +133,32 @@ export default function GameScreen() {
 
       {/* Leaderboard / end session */}
       {showLeaderboard && <LeaderboardModal onClose={() => setShowLeaderboard(false)} />}
+
+      {/* Flying coin animation overlay */}
+      {flyingCoins.map(coin => (
+        <div
+          key={coin.id}
+          style={{
+            position: 'fixed',
+            left: coin.x,
+            top: coin.y,
+            transform: 'translate(-50%, -50%)',
+            animationName: 'coin-fly-to-pot',
+            animationDuration: '0.42s',
+            animationTimingFunction: 'ease-in',
+            animationDelay: `${coin.delay}ms`,
+            animationFillMode: 'both',
+            ['--coin-dx' as string]: `${coin.dx}px`,
+            ['--coin-dy' as string]: `${coin.dy}px`,
+            fontSize: '18px',
+            pointerEvents: 'none',
+            zIndex: 9999,
+            userSelect: 'none',
+          }}
+        >
+          🪙
+        </div>
+      ))}
     </div>
   )
 }
