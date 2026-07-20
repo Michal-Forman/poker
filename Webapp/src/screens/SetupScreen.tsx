@@ -36,7 +36,7 @@ export default function SetupScreen() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center px-4 py-8">
+    <div className="h-full flex flex-col items-center px-4 py-8 overflow-y-auto">
       <h1 className="text-4xl font-bold text-amber-400 mb-1 tracking-wide">♠ POKER</h1>
       <p className="text-white/30 text-sm mb-8">Texas Hold'em Chip Tracker</p>
 

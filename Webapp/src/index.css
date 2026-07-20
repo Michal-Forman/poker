@@ -4,16 +4,21 @@
   box-sizing: border-box;
 }
 
-html, body, #root {
+html {
+  height: 100dvh;
+  overflow: hidden;
+}
+
+body, #root {
   height: 100%;
   margin: 0;
   padding: 0;
+  overflow: hidden;
   background-color: #070a0f;
   color: #f3f4f6;
   font-family: system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
 }
 
 input[type="number"]::-webkit-inner-spin-button,

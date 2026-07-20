@@ -71,7 +71,7 @@ export default function GameScreen() {
     players.every(p => p.status !== 'active')
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="h-full flex flex-col">
       {/* Header */}
       <div className="flex items-center px-4 pt-3 pb-2" style={{ paddingTop: 'max(env(safe-area-inset-top), 0.75rem)' }}>
         <div className="flex-1 text-white/30 text-xs">
