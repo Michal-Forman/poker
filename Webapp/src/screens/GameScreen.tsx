@@ -7,6 +7,8 @@ import ActionPanel from '../components/ActionPanel'
 import WinnerModal from '../components/WinnerModal'
 import LeaderboardModal from '../components/LeaderboardModal'
 
+let nextCoinId = 0
+
 interface FlyingCoin {
   id: number
   x: number
@@ -44,7 +46,7 @@ export default function GameScreen() {
     const dy = endY - startY
 
     const coins: FlyingCoin[] = Array.from({ length: 4 }, (_, i) => ({
-      id: lastAction.id * 10 + i,
+      id: nextCoinId++,
       x: startX + (i % 2 === 0 ? -8 : 8),
       y: startY + (i < 2 ? -8 : 8),
       dx,
@@ -92,7 +94,7 @@ export default function GameScreen() {
 
       {/* Player grid */}
       <div className="flex-1 px-3 pb-2">
-        <div className={`grid gap-2 h-full ${
+        <div className={`grid gap-2 ${
           count <= 2 ? 'grid-cols-1' :
           count <= 4 ? 'grid-cols-2' :
           count <= 6 ? 'grid-cols-2' :
