@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Full bleed background for maskable icon compatibility -->
+  <rect width="512" height="512" fill="#1a4731"/>
+  <!-- Spade symbol, white, centered.
+       First/last control points kept close to center x so the top comes to a sharp spike. -->
+  <path d="
+    M 256,90
+    C 268,120 395,165 395,242
+    C 395,296 344,324 303,305
+    C 292,346 278,371 276,393
+    L 340,393 L 340,408 L 172,408 L 172,393 L 236,393
+    C 234,371 220,346 209,305
+    C 168,324 117,296 117,242
+    C 117,165 244,120 256,90 Z
+  " fill="white"/>
+</svg>
