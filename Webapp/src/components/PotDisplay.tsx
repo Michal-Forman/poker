@@ -1,6 +1,6 @@
 import type { Phase } from '../types/game'
 
-const PHASE_LABELS: Record<Phase, string> = {
+export const PHASE_LABELS: Record<Phase, string> = {
   SETUP: 'SETUP',
   PRE_FLOP: 'PRE-FLOP',
   FLOP: 'FLOP',
@@ -9,7 +9,7 @@ const PHASE_LABELS: Record<Phase, string> = {
   SHOWDOWN: 'SHOWDOWN',
 }
 
-const PHASE_COLORS: Record<Phase, string> = {
+export const PHASE_COLORS: Record<Phase, string> = {
   SETUP: 'text-white/25',
   PRE_FLOP: 'text-white/45',
   FLOP: 'text-white/55',
@@ -20,23 +20,15 @@ const PHASE_COLORS: Record<Phase, string> = {
 
 interface Props {
   pot: number
-  phase: Phase
-  handNumber: number
 }
 
-export default function PotDisplay({ pot, phase, handNumber }: Props) {
+export default function PotDisplay({ pot }: Props) {
   return (
-    <div className="text-center py-3">
-      <div className="flex items-center justify-center gap-3 mb-1">
-        <span className={`text-xs font-bold uppercase tracking-widest ${PHASE_COLORS[phase]}`}>
-          {PHASE_LABELS[phase]}
-        </span>
-        <span className="text-white/20 text-xs">Hand #{handNumber}</span>
-      </div>
+    <div className="h-full flex flex-col items-center justify-center gap-0.5">
+      <span className="text-white/25 text-xs uppercase tracking-widest">Pot</span>
       <div className="text-3xl font-bold text-white">
         🪙 {pot.toLocaleString()}
       </div>
-      <div className="text-white/25 text-xs mt-0.5">POT</div>
     </div>
   )
 }

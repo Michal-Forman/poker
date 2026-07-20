@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useGameStore } from '../store/gameStore'
 import { useAnimationStore } from '../store/animationStore'
 import PlayerCard from '../components/PlayerCard'
-import PotDisplay from '../components/PotDisplay'
+import PotDisplay, { PHASE_COLORS, PHASE_LABELS } from '../components/PotDisplay'
 import ActionPanel from '../components/ActionPanel'
 import WinnerModal from '../components/WinnerModal'
 import LeaderboardModal from '../components/LeaderboardModal'
@@ -75,21 +75,33 @@ export default function GameScreen() {
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="flex items-center px-4 pt-3 pb-2" style={{ paddingTop: 'max(env(safe-area-inset-top), 0.75rem)' }}>
-        <div className="flex-1 text-white/30 text-xs">
-          Blinds: {smallBlind}/{bigBlind}
+      <div
+        className="flex items-stretch gap-3 px-4 pb-3"
+        style={{ paddingTop: 'max(env(safe-area-inset-top), 0.75rem)' }}
+      >
+        {/* Left: phase + hand, then blinds pushed to bottom */}
+        <div className="flex flex-col justify-between min-w-0">
+          <div className="flex flex-col gap-0.5">
+            <span className={`text-xs font-bold uppercase tracking-widest ${PHASE_COLORS[phase]}`}>
+              {PHASE_LABELS[phase]}
+            </span>
+            <span className="text-white/25 text-xs">Hand #{handNumber}</span>
+          </div>
+          <span className="text-white/20 text-xs">Blinds {smallBlind}/{bigBlind}</span>
         </div>
-        <div ref={potRef}>
-          <PotDisplay pot={pot} phase={phase} handNumber={handNumber} />
+
+        {/* Center: pot */}
+        <div ref={potRef} className="flex-1">
+          <PotDisplay pot={pot} />
         </div>
-        <div className="flex-1 flex justify-end">
-          <button
-            onClick={() => setShowLeaderboard(true)}
-            className="text-white/25 text-xs active:text-red-400 transition-colors"
-          >
-            End&nbsp;Session
-          </button>
-        </div>
+
+        {/* Right: End Session button */}
+        <button
+          onClick={() => setShowLeaderboard(true)}
+          className="shrink-0 px-3 rounded-lg border border-white/15 bg-white/5 text-white/40 text-xs font-medium active:bg-red-900/40 active:border-red-500/40 active:text-red-400 transition-colors"
+        >
+          End Session
+        </button>
       </div>
 
       {/* Player grid */}
