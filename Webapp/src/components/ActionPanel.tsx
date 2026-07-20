@@ -42,7 +42,7 @@ export default function ActionPanel() {
   const setQuick = (total: number) => setRaiseTotal(Math.min(Math.max(total, minRaise), maxRaise))
 
   return (
-    <div className="bg-black/50 backdrop-blur-xl border-t border-white/[0.08] px-4 pt-3 pb-safe">
+    <div className="bg-black/50 backdrop-blur-xl border-t border-white/[0.08] px-4 pt-3" style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 1.25rem)' }}>
       {/* Active player label */}
       <div className="text-center mb-3">
         <span className="text-amber-400 font-bold text-base">{player.name}</span>

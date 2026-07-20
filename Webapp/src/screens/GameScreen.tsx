@@ -73,19 +73,21 @@ export default function GameScreen() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 pt-safe pt-3 pb-2">
-        <div className="text-white/30 text-xs">
+      <div className="flex items-center px-4 pt-3 pb-2" style={{ paddingTop: 'max(env(safe-area-inset-top), 0.75rem)' }}>
+        <div className="flex-1 text-white/30 text-xs">
           Blinds: {smallBlind}/{bigBlind}
         </div>
         <div ref={potRef}>
           <PotDisplay pot={pot} phase={phase} handNumber={handNumber} />
         </div>
-        <button
-          onClick={() => setShowLeaderboard(true)}
-          className="text-white/25 text-xs text-right active:text-red-400 transition-colors"
-        >
-          End&nbsp;Session
-        </button>
+        <div className="flex-1 flex justify-end">
+          <button
+            onClick={() => setShowLeaderboard(true)}
+            className="text-white/25 text-xs active:text-red-400 transition-colors"
+          >
+            End&nbsp;Session
+          </button>
+        </div>
       </div>
 
       {/* Player grid */}
