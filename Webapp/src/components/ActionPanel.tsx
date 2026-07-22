@@ -5,6 +5,7 @@ export default function ActionPanel() {
   const { players, currentPlayerIndex, currentBet, minBet, pot, fold, call, raise } = useGameStore()
   const [showRaise, setShowRaise] = useState(false)
   const [raiseTotal, setRaiseTotal] = useState(0)
+  const [isEditingAmount, setIsEditingAmount] = useState(false)
 
   const player = players[currentPlayerIndex]
   if (!player || player.status !== 'active') return null
@@ -22,6 +23,7 @@ export default function ActionPanel() {
 
   const closeRaise = () => {
     setShowRaise(false)
+    setIsEditingAmount(false)
   }
 
   const handleCall = () => {
@@ -41,6 +43,11 @@ export default function ActionPanel() {
 
   const setQuick = (total: number) => setRaiseTotal(Math.min(Math.max(total, minRaise), maxRaise))
 
+  const commitInput = (raw: string) => {
+    const parsed = parseInt(raw, 10)
+    if (!isNaN(parsed)) setQuick(parsed)
+  }
+
   return (
     <div className="bg-black/50 backdrop-blur-xl border-t border-white/[0.08] px-4 pt-3" style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 1.25rem)' }}>
       {/* Active player label */}
@@ -56,7 +63,28 @@ export default function ActionPanel() {
         <div className="space-y-3">
           {/* Amount display */}
           <div className="text-center">
-            <span className="text-amber-400 text-2xl font-bold">{raiseTotal.toLocaleString()}</span>
+            {isEditingAmount ? (
+              <input
+                type="number"
+                inputMode="numeric"
+                autoFocus
+                defaultValue={raiseTotal}
+                onBlur={e => { commitInput(e.target.value); setIsEditingAmount(false) }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') { commitInput((e.target as HTMLInputElement).value); setIsEditingAmount(false) }
+                  if (e.key === 'Escape') setIsEditingAmount(false)
+                }}
+                className="bg-transparent text-amber-400 text-2xl font-bold text-center w-32 border-b border-amber-400/60 outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+            ) : (
+              <button
+                type="button"
+                onClick={() => setIsEditingAmount(true)}
+                className="text-amber-400 text-2xl font-bold underline decoration-dotted underline-offset-4"
+              >
+                {raiseTotal.toLocaleString()}
+              </button>
+            )}
             <span className="text-white/40 text-sm ml-2">total bet</span>
           </div>
 
@@ -109,12 +137,14 @@ export default function ActionPanel() {
         </div>
       ) : (
         <div className="flex gap-3">
-          <button
-            onClick={handleFold}
-            className="flex-1 bg-red-500/10 border border-red-500/20 hover:bg-red-500/[0.18] active:bg-red-500/10 text-red-400 font-bold py-4 rounded-2xl text-lg transition-colors"
-          >
-            FOLD
-          </button>
+          {!isCheck && (
+            <button
+              onClick={handleFold}
+              className="flex-1 bg-red-500/10 border border-red-500/20 hover:bg-red-500/[0.18] active:bg-red-500/10 text-red-400 font-bold py-4 rounded-2xl text-lg transition-colors"
+            >
+              FOLD
+            </button>
+          )}
           <button
             onClick={handleCall}
             className="flex-1 bg-sky-500/10 border border-sky-400/20 hover:bg-sky-500/[0.18] active:bg-sky-500/10 text-sky-300 font-bold py-4 rounded-2xl text-lg transition-colors"
@@ -126,7 +156,7 @@ export default function ActionPanel() {
               onClick={openRaise}
               className="flex-1 bg-amber-400/10 border border-amber-400/20 hover:bg-amber-400/[0.18] active:bg-amber-400/10 text-amber-300 font-bold py-4 rounded-2xl text-lg transition-colors"
             >
-              RAISE
+              {currentBet === 0 ? 'BET' : 'RAISE'}
             </button>
           )}
         </div>
