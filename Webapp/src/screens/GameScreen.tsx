@@ -38,7 +38,12 @@ export default function GameScreen() {
     if ((triggerPhases as readonly string[]).includes(phase) && phase !== prev) {
       setAnnouncedPhase(phase)
       const timer = setTimeout(() => setAnnouncedPhase(null), 1500)
-      return () => clearTimeout(timer)
+      const dismiss = () => setAnnouncedPhase(null)
+      document.addEventListener('pointerdown', dismiss, { once: true })
+      return () => {
+        clearTimeout(timer)
+        document.removeEventListener('pointerdown', dismiss)
+      }
     }
   }, [phase])
 

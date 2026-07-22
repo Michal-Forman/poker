@@ -145,20 +145,22 @@ export default function WinnerModal({ onEndGame }: Props) {
           {isAutoWin ? 'COLLECT POT' : sidePots.length > 1 ? 'AWARD POTS' : 'AWARD POT'}
         </button>
 
-        <button
-          onClick={() => setShowTopUp(true)}
-          className="w-full border border-white/[0.08] text-white/35 font-semibold text-sm py-3 rounded-2xl"
-        >
-          Top Up / Buy In
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowTopUp(true)}
+            className="flex-1 border border-white/[0.08] text-white/35 font-semibold text-sm py-3 rounded-2xl"
+          >
+            Buy In
+          </button>
 
-        <button
-          onClick={handleAwardAndEnd}
-          disabled={!isAutoWin && !allPotsHaveWinners}
-          className="w-full disabled:opacity-40 border border-white/[0.08] text-white/35 font-semibold text-sm py-3 rounded-2xl"
-        >
-          Award &amp; End Session
-        </button>
+          <button
+            onClick={handleAwardAndEnd}
+            disabled={!isAutoWin && !allPotsHaveWinners}
+            className="flex-1 disabled:opacity-40 border border-white/[0.08] text-white/35 font-semibold text-sm py-3 rounded-2xl"
+          >
+            Award &amp; End Session
+          </button>
+        </div>
       </div>
     </div>
 
