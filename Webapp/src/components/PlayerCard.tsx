@@ -31,19 +31,19 @@ const PlayerCard = forwardRef<HTMLDivElement, Props>(function PlayerCard(
       {/* Badges row */}
       <div className="flex gap-1 mb-1.5 min-h-[20px]">
         {isDealer && (
-          <span className="bg-white/20 text-white border border-white/25 text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none">D</span>
+          <span className={`text-[10px] font-bold px-1.5 pt-[3px] pb-[1px] rounded-full leading-none border ${isActive ? 'bg-white text-black border-white' : 'bg-white/20 text-white border-white/25'}`}>D</span>
         )}
         {isSB && (
-          <span className="bg-sky-400/20 text-sky-300 border border-sky-400/25 text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none">SB</span>
+          <span className={`text-[10px] font-bold px-1.5 pt-[3px] pb-[1px] rounded-full leading-none border ${isActive ? 'bg-sky-700 text-sky-100 border-sky-600' : 'bg-sky-400/20 text-sky-300 border-sky-400/25'}`}>SB</span>
         )}
         {isBB && (
-          <span className="bg-red-400/20 text-red-300 border border-red-400/25 text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none">BB</span>
+          <span className={`text-[10px] font-bold px-1.5 pt-[3px] pb-[1px] rounded-full leading-none border ${isActive ? 'bg-red-700 text-red-100 border-red-600' : 'bg-red-400/20 text-red-300 border-red-400/25'}`}>BB</span>
         )}
         {isAllIn && (
-          <span className="bg-amber-400/20 text-amber-300 border border-amber-400/30 text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none">ALL IN</span>
+          <span className={`text-[10px] font-bold px-1.5 pt-[3px] pb-[1px] rounded-full leading-none border ${isActive ? 'bg-black/20 text-black border-black/25' : 'bg-amber-400/20 text-amber-300 border-amber-400/30'}`}>ALL IN</span>
         )}
         {isFolded && (
-          <span className="bg-white/10 text-white/40 text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none">FOLD</span>
+          <span className="bg-white/10 text-white/40 text-[10px] font-bold px-1.5 pt-[3px] pb-[1px] rounded-full leading-none">FOLD</span>
         )}
       </div>
 
