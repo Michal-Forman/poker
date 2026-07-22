@@ -34,10 +34,21 @@ export default function WinnerModal({ onEndGame }: Props) {
   const handleAward = () => {
     if (isAutoWin) {
       awardPot(sidePots.map(() => [eligible[0].id]))
-      return
+    } else {
+      if (!allPotsHaveWinners) return
+      awardPot(selectedWinners)
     }
-    if (!allPotsHaveWinners) return
-    awardPot(selectedWinners)
+    nextHand()
+  }
+
+  const handleAwardAndEnd = () => {
+    if (isAutoWin) {
+      awardPot(sidePots.map(() => [eligible[0].id]))
+    } else {
+      if (!allPotsHaveWinners) return
+      awardPot(selectedWinners)
+    }
+    onEndGame()
   }
 
   const potLabel = (idx: number, total: number) => {
@@ -131,20 +142,13 @@ export default function WinnerModal({ onEndGame }: Props) {
           {isAutoWin ? 'COLLECT POT' : sidePots.length > 1 ? 'AWARD POTS' : 'AWARD POT'}
         </button>
 
-        <div className="flex gap-3 pt-1">
-          <button
-            onClick={nextHand}
-            className="flex-1 bg-white/[0.07] border border-white/10 text-white/70 font-semibold py-3 rounded-2xl"
-          >
-            Next Hand
-          </button>
-          <button
-            onClick={onEndGame}
-            className="flex-1 border border-white/[0.06] text-white/25 font-semibold py-3 rounded-2xl"
-          >
-            End Game
-          </button>
-        </div>
+        <button
+          onClick={handleAwardAndEnd}
+          disabled={!isAutoWin && !allPotsHaveWinners}
+          className="w-full disabled:opacity-40 border border-white/[0.08] text-white/35 font-semibold text-sm py-3 rounded-2xl"
+        >
+          Award &amp; End Session
+        </button>
       </div>
     </div>
   )
