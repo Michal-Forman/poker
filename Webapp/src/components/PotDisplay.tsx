@@ -11,11 +11,11 @@ export const PHASE_LABELS: Record<Phase, string> = {
 
 export const PHASE_COLORS: Record<Phase, string> = {
   SETUP: 'text-white/25',
-  PRE_FLOP: 'text-white/45',
-  FLOP: 'text-white/55',
+  PRE_FLOP: 'text-amber-300/70',
+  FLOP: 'text-amber-300/70',
   TURN: 'text-amber-300/70',
-  RIVER: 'text-amber-400/80',
-  SHOWDOWN: 'text-red-400/80',
+  RIVER: 'text-amber-300/70',
+  SHOWDOWN: 'text-amber-300/70',
 }
 
 interface Props {

@@ -7,8 +7,6 @@ import ActionPanel from '../components/ActionPanel'
 import WinnerModal from '../components/WinnerModal'
 import LeaderboardModal from '../components/LeaderboardModal'
 
-let nextCoinId = 0
-
 interface FlyingCoin {
   id: number
   x: number
@@ -25,9 +23,24 @@ export default function GameScreen() {
   const playerCardRefs = useRef<(HTMLDivElement | null)[]>([])
   const chipsRefs = useRef<(HTMLParagraphElement | null)[]>([])
   const potRef = useRef<HTMLDivElement | null>(null)
+  const coinIdRef = useRef(0)
   const [flyingCoins, setFlyingCoins] = useState<FlyingCoin[]>([])
 
   const lastAction = useAnimationStore(s => s.lastAction)
+
+  const prevPhaseRef = useRef<typeof phase>(phase)
+  const [announcedPhase, setAnnouncedPhase] = useState<typeof phase | null>(null)
+
+  useEffect(() => {
+    const prev = prevPhaseRef.current
+    prevPhaseRef.current = phase
+    const triggerPhases = ['FLOP', 'TURN', 'RIVER'] as const
+    if ((triggerPhases as readonly string[]).includes(phase) && phase !== prev) {
+      setAnnouncedPhase(phase)
+      const timer = setTimeout(() => setAnnouncedPhase(null), 1500)
+      return () => clearTimeout(timer)
+    }
+  }, [phase])
 
   useEffect(() => {
     if (!lastAction) return
@@ -46,7 +59,7 @@ export default function GameScreen() {
     const dy = endY - startY
 
     const coins: FlyingCoin[] = Array.from({ length: 4 }, (_, i) => ({
-      id: nextCoinId++,
+      id: coinIdRef.current++,
       x: startX + (i % 2 === 0 ? -8 : 8),
       y: startY + (i < 2 ? -8 : 8),
       dx,
@@ -149,6 +162,18 @@ export default function GameScreen() {
 
       {/* Leaderboard / end session */}
       {showLeaderboard && <LeaderboardModal onClose={() => setShowLeaderboard(false)} />}
+
+      {/* Phase transition announcement */}
+      {announcedPhase && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none bg-black/50">
+          <span
+            className={`text-8xl font-black tracking-widest ${PHASE_COLORS[announcedPhase]}`}
+            style={{ animation: 'phase-announce 1.5s ease-out forwards' }}
+          >
+            {PHASE_LABELS[announcedPhase]}
+          </span>
+        </div>
+      )}
 
       {/* Flying coin animation overlay */}
       {flyingCoins.map(coin => (
