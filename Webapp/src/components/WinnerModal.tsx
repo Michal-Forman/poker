@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useGameStore } from '../store/gameStore'
 import { computeSidePots } from '../store/gameStore'
+import TopUpModal from './TopUpModal'
 
 interface Props {
   onEndGame: () => void
@@ -15,6 +16,7 @@ export default function WinnerModal({ onEndGame }: Props) {
 
   // selectedWinners[i] = winner ids chosen for sidePots[i]
   // Pre-select pots where there's only one eligible player
+  const [showTopUp, setShowTopUp] = useState(false)
   const [selectedWinners, setSelectedWinners] = useState<number[][]>(
     () => sidePots.map(sp => sp.eligiblePlayerIds.length === 1 ? [...sp.eligiblePlayerIds] : [])
   )
@@ -57,6 +59,7 @@ export default function WinnerModal({ onEndGame }: Props) {
   }
 
   return (
+    <>
     <div className="fixed inset-0 bg-black/80 flex items-end justify-center z-50 pb-safe overflow-y-auto">
       <div className="bg-[#070a0f] border-t border-white/[0.08] rounded-t-3xl w-full max-w-sm p-6 space-y-4">
         <div className="text-center">
@@ -143,6 +146,13 @@ export default function WinnerModal({ onEndGame }: Props) {
         </button>
 
         <button
+          onClick={() => setShowTopUp(true)}
+          className="w-full border border-white/[0.08] text-white/35 font-semibold text-sm py-3 rounded-2xl"
+        >
+          Top Up / Buy In
+        </button>
+
+        <button
           onClick={handleAwardAndEnd}
           disabled={!isAutoWin && !allPotsHaveWinners}
           className="w-full disabled:opacity-40 border border-white/[0.08] text-white/35 font-semibold text-sm py-3 rounded-2xl"
@@ -151,5 +161,8 @@ export default function WinnerModal({ onEndGame }: Props) {
         </button>
       </div>
     </div>
+
+    {showTopUp && <TopUpModal onClose={() => setShowTopUp(false)} />}
+    </>
   )
 }

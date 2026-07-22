@@ -13,6 +13,7 @@ export interface Player {
   chips: number
   currentBet: number  // bet placed in the current betting round
   totalBet: number    // total bet placed in the entire hand (for pot calculation)
+  totalBuyIn: number  // cumulative chips purchased this session (initial + top-ups)
   status: PlayerStatus
   hasActed: boolean   // whether the player has acted in the current betting round
 }
@@ -47,4 +48,5 @@ export interface GameState {
   awardPot: (potWinners: number[][]) => void  // potWinners[i] = winner ids for side pot i
   nextHand: () => void
   resetToSetup: () => void
+  topUp: (playerId: number, amount: number) => void
 }

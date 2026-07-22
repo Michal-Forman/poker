@@ -35,9 +35,14 @@ export default function LeaderboardModal({ onClose }: Props) {
                 {PLACE_LABEL[i] ?? `${i + 1}.`}
               </span>
               <span className="flex-1 font-bold truncate">{p.name}</span>
-              <span className={`font-bold ${i === 0 ? 'text-black' : 'text-amber-400'}`}>
-                🪙 {p.chips.toLocaleString()}
-              </span>
+              <div className="text-right">
+                <p className={`font-bold ${i === 0 ? 'text-black' : 'text-amber-400'}`}>
+                  🪙 {p.chips.toLocaleString()}
+                </p>
+                <p className={`text-xs ${i === 0 ? 'text-black/50' : 'text-white/30'}`}>
+                  in: {(p.totalBuyIn ?? p.chips).toLocaleString()}
+                </p>
+              </div>
             </div>
           ))}
         </div>

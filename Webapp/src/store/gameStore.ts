@@ -161,6 +161,7 @@ export const useGameStore = create<GameState>()(
           chips: config.startingChips[i],
           currentBet: 0,
           totalBet: 0,
+          totalBuyIn: config.startingChips[i],
           status: 'active',
           hasActed: false,
         }))
@@ -354,6 +355,16 @@ export const useGameStore = create<GameState>()(
         })
       },
 
+      topUp: (playerId: number, amount: number) => {
+        set(state => ({
+          players: state.players.map(p =>
+            p.id === playerId
+              ? { ...p, chips: p.chips + amount, totalBuyIn: (p.totalBuyIn ?? p.chips) + amount }
+              : p
+          ),
+        }))
+      },
+
       resetToSetup: () => {
         set({
           phase: 'SETUP',
@@ -369,6 +380,20 @@ export const useGameStore = create<GameState>()(
     }),
     {
       name: 'poker-game-state',
+      version: 1,
+      migrate: (persistedState: unknown, version: number) => {
+        const state = persistedState as GameState
+        if (version === 0) {
+          return {
+            ...state,
+            players: state.players.map((p: Player) => ({
+              ...p,
+              totalBuyIn: p.totalBuyIn ?? p.chips,
+            })),
+          }
+        }
+        return state
+      },
     }
   )
 )
